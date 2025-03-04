@@ -1,11 +1,11 @@
 import user from '../model/userModel.js'
-
+import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { ErrorHandler } from '../utils/errorHandler.js'
 
 
 export const Register = async (req,res,next)=>{
-    const bcrypt = require("bcryptjs");
+    
 
     try {
         const existingUser = await user.findOne({email:req.body.email})
