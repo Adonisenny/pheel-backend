@@ -24,7 +24,9 @@ app.use('/api/auth',authrouter)
 app.use('/api/content',contentrouter)
 app.use('/api/thread',threadrouter)
 
-
+app.get("/", (req,res,next)=>{
+    res.json("the diary page")
+})
 
 mongoose.connect("mongodb+srv://Phillip:Phillip@cluster0.lhbenjf.mongodb.net/ELECTRODIARY?retryWrites=true&w=majority")
 .then(() => {
