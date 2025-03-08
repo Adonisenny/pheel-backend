@@ -8,34 +8,43 @@ import contentrouter from './routes/ContentRoutes.js'
 import threadrouter from './routes/threadRoutes.js'
 import bodyParser from "body-parser";
 
-const app = express()
-dotenv.config()
-app.use(cookieParser())
-app.use(cors())
-app.use(bodyParser.urlencoded({extended:false}))
-app.use(express.json())
+const app = express();
+dotenv.config();
 
-app.use((err,req,res,next)=> {
-    console.log(err.stack)
-    res.status(500).send('something is broken')
-})
-//Routes
-app.use('/api/auth',authrouter)
-app.use('/api/content',contentrouter)
-app.use('/api/thread',threadrouter)
+// Middleware
+app.use(cookieParser());
+app.use(cors({
+    origin: ["http://localhost:3000", "https://your-frontend-url.com"],
+    credentials: true
+}));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 
-app.get("/api/health", (req,res,next)=>{
-    res.json("the diary page")
-})
+// Routes
+app.use('/api/auth', authrouter);
+app.use('/api/content', contentrouter);
+app.use('/api/thread', threadrouter);
 
-mongoose.connect("mongodb+srv://Phillip:Phillip@cluster0.lhbenjf.mongodb.net/ELECTRODIARY?retryWrites=true&w=majority")
-.then(() => {
-    if(process.env.PORT){
-        app.listen(process.env.PORT, (req,res,next)=> {
-            console.log('connected to database')
-        })
-    }
-})
-.catch((error) => {
-    console.log(error)
-})
+// Health Check
+app.get("/api/health", (req, res) => {
+    res.json({ message: "Server is running fine" });
+});
+
+// Error Handling (MOVED TO BOTTOM)
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: "Internal Server Error" });
+});
+
+// Database Connection
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => {
+        console.log("Connected to MongoDB");
+        const PORT = process.env.PORT || 5000;
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    })
+    .catch((error) => {
+        console.error("MongoDB Connection Error:", error);
+    });
