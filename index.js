@@ -24,7 +24,7 @@ app.use('/api/auth',authrouter)
 app.use('/api/content',contentrouter)
 app.use('/api/thread',threadrouter)
 
-app.get("/", (req,res,next)=>{
+app.get("/api/health", (req,res,next)=>{
     res.json("the diary page")
 })
 
